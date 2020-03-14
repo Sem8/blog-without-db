@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const post = require("../models/post.model");
 const m = require("../helpers/middleware");
-
-// Routes
-module.exports = router;
+const fs = require('fs');
 
 // All posts
 router.get("/", async (req, res) => {
@@ -35,3 +33,19 @@ router.get("/:id", m.mustBeInteger, async (req, res) => {
       }
     });
 });
+
+// Insert a new post
+router.post("/", m.checkFieldsPost, async (req, res) => {
+  await post
+    .insertPost(req.body)
+    .then(post =>
+      res.status(201).json({
+        message: `The post #${post.id} has been created`,
+        content: post
+      })
+    )
+    .catch(err => res.status(500).json({ message: err.message }));
+});
+
+// Routes
+module.exports = router;
