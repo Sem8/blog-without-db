@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const post = require("../models/post.model");
 const m = require("../helpers/middleware");
-const fs = require('fs');
 
 // All posts
 router.get("/", async (req, res) => {
@@ -49,3 +48,23 @@ router.post("/", m.checkFieldsPost, async (req, res) => {
 
 // Routes
 module.exports = router;
+
+// update a post
+router.put("/:id", m.mustBeInteger, m.checkFieldsPost, async (req, res) => {
+  const id = req.params.id;
+
+  await post
+    .updatePost(id, req.body)
+    .then(post =>
+      res.json({
+        message: `The post #${id} has been updated`,
+        content: post
+      })
+    )
+    .catch(err => {
+      if (err.status) {
+        res.status(err.status).json({ message: err.message });
+      }
+      res.status(500).json({ message: err.message });
+    });
+});
