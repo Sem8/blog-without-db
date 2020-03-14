@@ -68,3 +68,16 @@ router.put("/:id", m.mustBeInteger, m.checkFieldsPost, async (req, res) => {
       res.status(500).json({ message: err.message });
     });
 });
+
+// delete posts
+router.delete('/:id', m.mustBeInteger, async (req, res) => {
+    const id = req.params.id
+    await post.deletePost(id).then(post => res.json({
+        message: `The post #${id} has been deleted`
+    })).catch(err => {
+        if (err.status) {
+            res.status(err.status).json({ message: err.message })
+        }
+        res.status(500).json({ message: err.message })
+    })
+})
